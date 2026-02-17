@@ -49,3 +49,8 @@ prompt
 server.log
 # Skills directory
 /skills/
+
+# database files (SQLite local database)
+/db/*.db
+/db/*.db-journal
+/prisma/*.db
