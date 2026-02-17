@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { ChefHat, ShoppingCart, Menu, X, User } from 'lucide-react'
+import { ChefHat, ShoppingCart, Menu, X, User, LogOut, LogIn } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
 import { Badge } from '@/components/ui/badge'
@@ -22,19 +22,17 @@ export default function Header() {
   }, [])
 
   const navItems = [
-    { href: '#home', label: 'Beranda' },
+    { href: '/', label: 'Beranda' },
     { href: '#products', label: 'Produk' },
     { href: '#promo', label: 'Promo' },
     { href: '#contact', label: 'Kontak' },
   ]
 
-  // Prevent hydration mismatch by not rendering dynamic content until mounted
   if (!mounted) {
     return (
       <header className="sticky top-0 z-50 gradient-primary shadow-lg">
         <div className="container mx-auto px-3 sm:px-4">
           <div className="flex h-14 sm:h-16 items-center justify-between">
-            {/* Logo */}
             <Link href="/" className="flex items-center space-x-2 text-white">
               <div className="rounded-full bg-white/20 p-1.5 sm:p-2">
                 <ChefHat className="h-6 w-6 sm:h-8 sm:w-8 text-white" />
@@ -45,9 +43,7 @@ export default function Header() {
               </div>
             </Link>
 
-            {/* Actions */}
             <div className="flex items-center gap-2 sm:gap-4">
-              {/* Cart Button */}
               <Button
                 variant="ghost"
                 size="icon"
@@ -57,7 +53,6 @@ export default function Header() {
                 <ShoppingCart className="h-5 w-5 sm:h-6 sm:w-6" />
               </Button>
 
-              {/* Mobile Menu Button */}
               <Sheet open={isOpen} onOpenChange={setIsOpen}>
                 <SheetTrigger asChild className="md:hidden">
                   <Button variant="ghost" size="icon" className="text-white hover:bg-white/20 h-9 w-9">
@@ -76,7 +71,6 @@ export default function Header() {
     <header className="sticky top-0 z-50 gradient-primary shadow-lg">
       <div className="container mx-auto px-3 sm:px-4">
         <div className="flex h-14 sm:h-16 items-center justify-between">
-          {/* Logo */}
           <Link href="/" className="flex items-center space-x-2 text-white">
             <div className="animate-fade-in animate-glow rounded-full bg-white/20 p-1.5 sm:p-2">
               <ChefHat className="h-6 w-6 sm:h-8 sm:w-8 text-white" />
@@ -87,7 +81,6 @@ export default function Header() {
             </div>
           </Link>
 
-          {/* Desktop Navigation */}
           <nav className="hidden lg:flex items-center space-x-4 sm:space-x-6">
             {navItems.map((item) => (
               <Link
@@ -100,9 +93,7 @@ export default function Header() {
             ))}
           </nav>
 
-          {/* Actions */}
           <div className="flex items-center gap-2 sm:gap-4">
-            {/* Cart Button */}
             <Button
               variant="ghost"
               size="icon"
@@ -117,36 +108,38 @@ export default function Header() {
               )}
             </Button>
 
-            {/* User Actions */}
             {user ? (
               <div className="hidden md:flex items-center gap-2">
-                <Button
-                  variant="ghost"
-                  className="text-white hover:bg-white/20 h-10 px-3 text-sm"
-                  onClick={() => (window.location.href = '#dashboard')}
-                >
-                  <User className="h-4 w-4 mr-1.5 sm:mr-2" />
-                  <span className="hidden sm:inline">{user.username}</span>
-                </Button>
+                <Link href="/dashboard">
+                  <Button
+                    variant="ghost"
+                    className="text-white hover:bg-white/20 h-10 px-3 text-sm flex items-center gap-1.5 sm:gap-2"
+                  >
+                    <User className="h-4 w-4 sm:h-5 sm:w-5" />
+                    <span className="hidden sm:inline">{user.username}</span>
+                  </Button>
+                </Link>
                 <Button
                   variant="ghost"
                   className="text-white hover:bg-white/20 h-10 px-3 text-sm"
                   onClick={logout}
                 >
-                  Keluar
+                  <LogOut className="h-4 w-4 sm:h-5 sm:w-5 mr-1.5 sm:mr-2" />
+                  <span className="hidden sm:inline">Keluar</span>
                 </Button>
               </div>
             ) : (
-              <Button
-                variant="ghost"
-                className="text-white hover:bg-white/20 h-10 px-4 text-sm hidden md:flex"
-                onClick={() => (window.location.href = '#login')}
-              >
-                Masuk
-              </Button>
+              <Link href="/dashboard">
+                <Button
+                  variant="ghost"
+                  className="text-white hover:bg-white/20 h-10 px-4 text-sm flex items-center gap-1.5 sm:gap-2"
+                >
+                  <LogIn className="h-4 w-4 sm:h-5 sm:w-5" />
+                  <span className="hidden sm:inline">Masuk</span>
+                </Button>
+              </Link>
             )}
 
-            {/* Mobile Menu Button */}
             <Sheet open={isOpen} onOpenChange={setIsOpen}>
               <SheetTrigger asChild className="md:hidden lg:hidden">
                 <Button variant="ghost" size="icon" className="text-white hover:bg-white/20 h-10 w-10">
@@ -171,6 +164,16 @@ export default function Header() {
                         <div className="text-sm text-white/90 mb-3 px-2">
                           Halo, {user.username}
                         </div>
+                        <Link href="/dashboard">
+                          <Button
+                            className="w-full h-12 text-base flex items-center justify-center gap-2"
+                            variant="outline"
+                            onClick={() => setIsOpen(false)}
+                          >
+                            <User className="h-5 w-5" />
+                            Dashboard
+                          </Button>
+                        </Link>
                         <Button
                           className="w-full h-12 text-base"
                           variant="outline"
@@ -179,19 +182,20 @@ export default function Header() {
                             setIsOpen(false)
                           }}
                         >
+                          <LogOut className="h-5 w-5 mr-2" />
                           Keluar
                         </Button>
                       </>
                     ) : (
-                      <Button
-                        className="w-full h-12 text-lg btn-gradient text-white"
-                        onClick={() => {
-                          setIsOpen(false)
-                          window.location.href = '#login'
-                        }}
-                      >
-                        Masuk
-                      </Button>
+                      <Link href="/dashboard">
+                        <Button
+                          className="w-full h-12 text-lg btn-gradient text-white flex items-center justify-center gap-2"
+                          onClick={() => setIsOpen(false)}
+                        >
+                          <LogIn className="h-5 w-5" />
+                          Masuk
+                        </Button>
+                      </Link>
                     )}
                   </div>
                 </nav>
@@ -199,10 +203,9 @@ export default function Header() {
             </Sheet>
           </div>
         </div>
-      </div>
 
-      {/* Cart Modal */}
-      <CartModal isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
+        <CartModal isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
+      </div>
     </header>
   )
 }

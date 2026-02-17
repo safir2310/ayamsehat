@@ -7,7 +7,6 @@ import Header from '@/components/Header'
 import HeroSection from '@/components/HeroSection'
 import ProductsSection from '@/components/ProductsSection'
 import AuthModal from '@/components/AuthModal'
-import UserDashboard from '@/components/UserDashboard'
 import AdminDashboard from '@/components/AdminDashboard'
 import Footer from '@/components/Footer'
 
@@ -80,50 +79,6 @@ export default function Home() {
                 </div>
               </div>
             </section>
-
-            {/* Contact Section */}
-            <section id="contact" className="py-16">
-              <div className="container mx-auto px-4 text-center">
-                <h2 className="text-3xl md:text-4xl font-bold mb-4 gradient-text">
-                  Hubungi Kami 📞
-                </h2>
-                <p className="text-muted-foreground text-lg mb-8 max-w-2xl mx-auto">
-                  Ada pertanyaan atau ingin memesan? Hubungi kami sekarang!
-                </p>
-                <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-                  <a
-                    href="https://wa.me/6285260812758"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="btn-gradient text-white px-8 py-4 rounded-lg font-semibold hover:scale-105 transition-transform inline-flex items-center gap-2"
-                  >
-                    <span className="text-xl">💬</span>
-                    WhatsApp: 085260812758
-                  </a>
-                  <a
-                    href="https://instagram.com"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="bg-pink-500 text-white px-8 py-4 rounded-lg font-semibold hover:scale-105 transition-transform inline-flex items-center gap-2"
-                  >
-                    <span className="text-xl">📸</span>
-                    Instagram
-                  </a>
-                  <a
-                    href="https://facebook.com"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="bg-blue-600 text-white px-8 py-4 rounded-lg font-semibold hover:scale-105 transition-transform inline-flex items-center gap-2"
-                  >
-                    <span className="text-xl">👍</span>
-                    Facebook
-                  </a>
-                </div>
-              </div>
-            </section>
-
-            {/* User Dashboard */}
-            <UserDashboard />
 
             {/* Admin Dashboard */}
             <AdminDashboard />
