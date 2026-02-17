@@ -54,3 +54,4 @@ server.log
 /db/*.db
 /db/*.db-journal
 /prisma/*.db
+.env*.local
