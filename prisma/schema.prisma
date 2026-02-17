@@ -1,9 +1,6 @@
 // This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -13,20 +10,169 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// User Model - ID 4 digit
 model User {
   id        String   @id @default(cuid())
+  userId    String   @unique // 4 digit ID
+  username  String   @unique
   email     String   @unique
-  name      String?
+  password  String
+  phone     String
+  address   String?
+  avatar    String?
+  role      String   @default("user") // "user" or "admin"
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  walletSaldo    WalletSaldo?
+  walletHistory  WalletHistory[]
+  transactions   Transaction[]
+  redeems        RedeemHistory[]
+  cart           Cart[]
 }
 
-model Post {
-  id        String   @id @default(cuid())
-  title     String
-  content   String?
-  published Boolean  @default(false)
-  authorId  String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+// Admin Model
+model Admin {
+  id          String   @id @default(cuid())
+  username    String   @unique
+  email       String   @unique
+  password    String
+  phone       String
+  birthDate   DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// Produk Model
+model Produk {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  price       Int
+  category    String   // "makanan", "minuman"
+  image       String?
+  isPromo     Boolean  @default(false)
+  discount    Int      @default(0)
+  isNew       Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  cart        Cart[]
+  transactionItems TransactionItem[]
+}
+
+// Produk Point Model - produk yang bisa ditukar dengan point
+model ProdukPoint {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  points      Int      // harga dalam point
+  image       String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// Redeem Code Model
+model RedeemCode {
+  id          String   @id @default(cuid())
+  code        String   @unique
+  points      Int
+  isActive    Boolean  @default(true)
+  isUsed      Boolean  @default(false)
+  expiredAt   DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  histories   RedeemHistory[]
+}
+
+// Redeem History Model
+model RedeemHistory {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  codeId      String
+  code        RedeemCode @relation(fields: [codeId], references: [id])
+  points      Int
+  createdAt   DateTime @default(now())
+}
+
+// Wallet Saldo Model
+model WalletSaldo {
+  id          String   @id @default(cuid())
+  userId      String   @unique
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  balance     Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// Wallet History Model
+model WalletHistory {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type        String   // "credit", "debit"
+  amount      Int
+  description String
+  createdAt   DateTime @default(now())
+}
+
+// Cart Model
+model Cart {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  produkId    String
+  produk      Produk   @relation(fields: [produkId], references: [id], onDelete: Cascade)
+  quantity    Int      @default(1)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// Transaction Model
+model Transaction {
+  id          String   @id @default(cuid())
+  strukId     String   @unique // 4 digit ID
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  name        String
+  address     String
+  phone       String
+  total       Int
+  discount    Int      @default(0)
+  balanceUsed Int     @default(0)
+  finalTotal  Int
+  status      String   @default("Menunggu") // "Menunggu", "Diproses", "Selesai", "Cancel"
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  items       TransactionItem[]
+}
+
+// Transaction Item Model (detail per produk dalam transaksi)
+model TransactionItem {
+  id             String   @id @default(cuid())
+  transactionId  String
+  transaction    Transaction @relation(fields: [transactionId], references: [id], onDelete: Cascade)
+  produkId       String
+  produk         Produk   @relation(fields: [produkId], references: [id])
+  quantity       Int
+  price          Int
+  subtotal       Int
+}
+
+// Profile Toko Model
+model ProfileToko {
+  id          String   @id @default(cuid())
+  name        String   @default("AYAM GEPREK SAMBAL IJO")
+  slogan      String   @default("Pedasnya Bikin Nagih 🔥🔥")
+  address     String
+  phone       String   @default("085260812758")
+  instagram   String?
+  facebook    String?
+  pointValue  Int      @default(100) // 1 point = Rp 100
+  minBalance  Int      @default(1000) // minimum penggunaan saldo
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
