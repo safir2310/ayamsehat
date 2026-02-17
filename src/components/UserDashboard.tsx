@@ -49,7 +49,9 @@ const formatDate = (dateString: string) => {
 }
 
 export default function UserDashboard() {
-  const { user, logout } = useAuth()
+  // Only use Auth context on client side to avoid build-time errors
+  const isClient = typeof window !== 'undefined'
+  const auth = useAuth()
   const [mounted, setMounted] = useState(false)
   const [activeTab, setActiveTab] = useState('profile')
   const [balance, setBalance] = useState(0)
@@ -64,11 +66,22 @@ export default function UserDashboard() {
   }, [])
 
   const [profileData, setProfileData] = useState({
-    name: user?.username || '',
-    email: user?.email || '',
-    phone: user?.phone || '',
-    address: user?.address || '',
+    name: auth.user?.username || '',
+    email: auth.user?.email || '',
+    phone: auth.user?.phone || '',
+    address: auth.user?.address || '',
   })
+
+  useEffect(() => {
+    if (auth.user) {
+      setProfileData({
+        name: auth.user.username || '',
+        email: auth.user.email || '',
+        phone: auth.user.phone || '',
+        address: auth.user.address || '',
+      })
+    }
+  }, [auth.user])
 
   const fetchData = async () => {
     try {
@@ -105,10 +118,10 @@ export default function UserDashboard() {
   }
 
   useEffect(() => {
-    if (user && mounted) {
+    if (auth.user && mounted) {
       fetchData()
     }
-  }, [user, mounted])
+  }, [auth.user, mounted])
 
   const handleUpdateProfile = async () => {
     setLoading(true)
@@ -189,7 +202,7 @@ export default function UserDashboard() {
     )
   }
 
-  if (!user) {
+  if (!auth.user) {
     return (
       <div className="container mx-auto px-4 py-16 text-center">
         <p className="text-lg text-muted-foreground">Silakan login terlebih dahulu</p>
@@ -205,18 +218,18 @@ export default function UserDashboard() {
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 md:gap-8">
             <div className="flex items-center gap-3 md:gap-4">
               <div className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center text-white text-2xl sm:text-3xl md:text-4xl font-bold border-2 border-white/30">
-                {user.username.charAt(0).toUpperCase()}
+                {auth.user.username.charAt(0).toUpperCase()}
               </div>
               <div className="flex-1">
                 <h1 className="text-xl sm:text-2xl md:text-3xl font-bold mb-1">
-                  Halo, {user.username}!
+                  Halo, {auth.user.username}!
                 </h1>
                 <p className="text-white/90 text-sm md:text-base flex items-center gap-2">
                   <MapPin className="h-4 w-4" />
-                  {user.address || 'Belum ada alamat'}
+                  {auth.user.address || 'Belum ada alamat'}
                 </p>
                 <p className="text-white/80 text-xs md:text-sm mt-1">
-                  ID: {user.userId}
+                  ID: {auth.user.userId}
                 </p>
               </div>
             </div>
@@ -359,7 +372,7 @@ export default function UserDashboard() {
                       <MapPin className="h-4 w-4" />
                       ID User
                     </Label>
-                    <Input value={user.userId} disabled className="h-11" />
+                    <Input value={auth.user.userId} disabled className="h-11" />
                   </div>
                 </div>
 
@@ -382,7 +395,7 @@ export default function UserDashboard() {
                 </Button>
 
                 <div className="pt-4 border-t">
-                  <Button variant="destructive" onClick={logout} className="w-full h-11 text-base md:text-base">
+                  <Button variant="destructive" onClick={auth.logout} className="w-full h-11 text-base md:text-base">
                     Keluar
                   </Button>
                 </div>
